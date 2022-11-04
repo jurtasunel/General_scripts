@@ -6,23 +6,23 @@ library(seqinr)
 library(ape)
 library(phangorn) # Get midpoint of tree to re root it.
 
-# Load fasta files and metadata files.
-fasta_path = "/home/gabriel/Desktop/Jose/Projects/GISAID_reports/Data/PaulGrier_03112022/gisaid_hcov-19_2022_11_03_15.fasta"
+# Load fasta files and metadata files. Fasta and metadata files are downloaded with GSAID format.
+fasta_path = "FFFF"
 fasta_file <- read.fasta(fasta_path, as.string = TRUE, forceDNAtolower = FALSE, set.attributes = FALSE)
-reference_path = "/home/gabriel/Desktop/Jose/Reference_sequences/Covid/MN908947.fasta"
+reference_path = "RRRR"
 reference_file <- read.fasta(reference_path, as.string = TRUE, forceDNAtolower = FALSE, set.attributes = FALSE)
 # Load metadata_files.
-metadata_path = "/home/gabriel/Desktop/Jose/Projects/GISAID_reports/Data/PaulGrier_03112022/gisaid_hcov-19_2022_11_03_15.tsv"
+metadata_path = "MMMM"
 metadata_file <- read.table(metadata_path,  sep = '\t', header = TRUE, stringsAsFactors = FALSE)
-lab_path = "/home/gabriel/Desktop/Jose/Projects/GISAID_reports/Data/PaulGrier_03112022/gisaid_auspice_input_hcov-19_2022_11_03_15/1667490538436.metadata.tsv"
+lab_path = "LLLL"
 lab_file <- read.table(lab_path,  sep = '\t', header = TRUE, stringsAsFactors = FALSE, quote = "£")
 # Rename fasta file names.
 for (i in 1:length(fasta_file)){
   names(fasta_file)[i] <- unlist(strsplit(names(fasta_file)[i], "|", fixed = TRUE))[2]
 }
 # Filter for specific IDs
-target_IDs <- c("EPI_ISL_15545063", "EPI_ISL_15545064", "EPI_ISL_15545065", "EPI_ISL_15545066", "EPI_ISL_15545067", "EPI_ISL_15545068", "EPI_ISL_15545069")
-Healthcare_setting <- c("St.Vincents_Care_centre", "St.Vincents_Care_centre", "Newbrook_Nursing_Home", "Newbrook_Nursing_Home", "Newbrook_Nursing_Home", "Hospital_Inpatient", "Hospital_Inpatient")
+target_IDs <- c("AAAA", "BBBB", "CCCC")
+Healthcare_setting <- c("aaaa", "bbbb", "cccc")
 metadata_file <- metadata_file[metadata_file$Accession.ID %in% target_IDs,]
 lab_file <- lab_file[lab_file$gisaid_epi_isl %in% target_IDs,]
 fasta_file <- fasta_file[target_IDs]
