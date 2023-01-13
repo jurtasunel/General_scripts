@@ -21,7 +21,7 @@ reversecomp <- function(nt_seq){
   for (i in length(nt_seq):1){
     # Get the corresponding complement nucleotide.
     complement_nt <- nt_change[nt_seq[i]]
-    # Concatenate the new nucleotide to the complement sequence..
+    # Concatenate the new nucleotide to the complement sequence.
     complement_seq <- paste0(complement_seq, complement_nt)
   }
   # Return the complement sequence.
