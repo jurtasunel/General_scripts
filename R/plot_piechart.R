@@ -1,12 +1,16 @@
+### This script reads in taxonomy csv result and blast output result from the Illumina Taxonomy to produce a piechart.
+
 # Libraries:
 library(ggplot2)
 library(RColorBrewer)
 
 # Path to data.
-datapath <- "/home/josemari/Desktop/Jose/Projects/Illumina_taxonomy/Results/09022023_NetoVir/Extract8_S8_L001_result/taxon_results.csv"
-data_df <- read.csv(datapath, stringsAsFactors = FALSE)
+datapath <- "/home/josemari/Desktop/Jose/Projects/Illumina_taxonomy/Results/09022023_NetoVir/Extract8_S8_L001_result"
+data_df <- read.csv(paste0(datapath,"/taxon_results.csv"), stringsAsFactors = FALSE)
+blast_out <- read.table(paste0(datapath,"/blastn_output.tab"))
+aln_reads <- length(unique(blast_out$V1)) # Get the number of aligned reads. One read can align to multiple orgs, that's why the unique is required.
 
-# Summarize the data for plotting. All organisms tha represent less than 1% are grouped in "others".
+# Summarize the data for plotting. All organisms that represent less than 1% are grouped in "others".
 summary_data <- data_df[data_df$Percentage > 1,]
 summary_data <- summary_data[order(-summary_data$Percentage),]
 others_data <- data_df[data_df$Percentage < 1,]
@@ -25,7 +29,7 @@ taxon_pie <- ggplot(summary_data, aes(x="", y=Percentage, fill=Organism)) + geom
   theme_void() +
   labs(x = NULL, y = NULL, fill = NULL) +
   scale_fill_manual(values = mycolors, breaks = as.character(summary_data$Organism)) +  # Rearrange legend on decreasing freq.
-  labs(caption = (paste0("*There are ", nrow(others_data), " organisms with less than 1% representation grouped in 'Others'"))) +
+  labs(caption = (paste0("*There are ", nrow(others_data), " organisms with less than 1% representation grouped in 'Others' \n \n *There are ", aln_reads, " aligned reads."))) +
   theme(plot.margin = unit(c(10,5,10,5), "mm"))
 taxon_pie
 
