@@ -25,10 +25,16 @@ tip.colours <- c("darkblue", rep("darkred", (length(labels) - 1)))
 
 # Calculate pairwise distances between tips
 distances <- cophenetic(rooted_tree)
+# Make a sequence between the minimun and maximun for plotting evenly spaced axis tips.
+dist_axes <- round(seq(min(distances), max(distances), by = max(distances)/5), 3)
 
 # Plot the tree with coloured tip labels and genetic distance on x-axis
 plot(rooted_tree, tip.color = tip.colours, cex = 0.75, align.tip.label = TRUE)
-axis(side = 1, at = distances, labels = TRUE, tick = TRUE, xlim = range(distances), cex.axis = 0.8)
+axis(side = 1, at = dist_axes, labels = TRUE, tick = TRUE, xlim = range(distances), cex.axis = 0.8)
+
+
+
+
 
 
 
