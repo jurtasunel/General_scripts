@@ -1,0 +1,18 @@
+Install virtual box:
+https://itsfoss.com/install-windows-10-virtualbox-linux/
+
+Solve booting issue:
+https://www.wintips.org/virtualbox-no-bootable-medium-found-system-halted/
+
+MicrosoftAccount
+mail: jmurtasun.94@gmail.com
+pwd: chemaMicrosoft.2
+pin: 4428
+
+Install extension pack for camera/vid/usb built in devices
+https://owlhowto.com/how-to-fix-failed-to-install-the-extension-pack/
+
+
+
+
+
