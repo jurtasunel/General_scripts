@@ -9,7 +9,7 @@ library(dplyr)
 library(ape)
 
 # Get path to alignment fasta.
-fasta_path = "/home/josemari/Desktop/Jose/Projects/AAV2/AAV2_mafft_aligned.fasta"
+fasta_path = "/home/josemari/Desktop/Jose/Projects/AAV2/Data/sct_AAV2_mafft_aligned.fasta"
 # Read in the fasta with seqinr.
 aligned_fasta <- read.fasta(fasta_path, as.string = TRUE, forceDNAtolower = TRUE, set.attributes = FALSE)
 # Read in the fasta with ape.
@@ -139,8 +139,16 @@ unique_vars
 #ncol(ape_fasta)
 # Total length multiplied by genetic distance between seq and reference gives the number of expected mutations.
 
-
-
-
-
+# Get number of variants between two sequences:
+#nvar <- 0
+# Loop throught the colums of ape object (one column for each nucleotide, so number of cols is length of genome)
+#for (i in 1:ncol(ape_fasta)){
+# If the the nt is different than the reference for each position, increase the nvar by 1.
+#  if(ape_fasta[,i][["NC_001401.2"]] != ape_fasta[,i][["OP019741.1"]]){
+#    nvar <- nvar+1
+#  }
+#}
+# Get the genetic distance of a particular seq compared to reference by dividing the number of snps between the lenght of the genome.
+#nvar/ncol(ape_fasta)
+# Genetic dist of tree might vary a bit from the one obtained through this method because disd.dna and tree use different model. 
 
