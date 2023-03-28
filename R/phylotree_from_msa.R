@@ -6,7 +6,8 @@ library(ape)
 library(TreeTools)
 
 # Get the location of the alignment fasta.
-fasta_path <- "/home/josemari/Desktop/Jose/Projects/AAV2/AAV2_mafft_aligned.fasta"
+fasta_path <- "/home/josemari/Desktop/Jose/Projects/Phylogeny_analysis/PaulGrier_28022023/mafft_aligned.fasta"
+
 # Read in the file and get the reference.
 aln <- read.dna(fasta_path, format = "fasta")
 reference <- aln[1,]
@@ -24,11 +25,10 @@ bs <- boot.phylo(rooted_tree, aln, FUN = function(xx) nj(dist.dna(xx)), B = bs_r
 bs <- bs/10
 # Loop through the bootstraps.
 for (i in 1:length(bs)){
-  
-  # Replace NA by empty string.
-  if (is.na(bs[i]) == TRUE){
+  # Replace NA and bs less than 60% by empty string.
+  if (is.na(bs[i]) == TRUE | as.numeric(bs[i]) < 60){
     bs[i] <- ""
-    # Add the % symbol. 
+  # Add the % symbol. 
   } else{
     bs[i] <- paste0(bs[i], "%")}
   }
@@ -52,14 +52,5 @@ tree_plot <- plot(rooted_tree, tip.color = tip.colours, cex = 0.75, align.tip.la
 axis(side = 1, at = dist_axes, labels = TRUE, tick = TRUE, xlim = range(distances), cex.axis = 0.8)
 # Add margin text.
 mtext(paste0("*Number of bootstrap replicates: ", bs_replicates), side = 3, cex = 0.8)
-
-
-
-
-
-
-
-
-
 
 
