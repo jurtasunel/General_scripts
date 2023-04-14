@@ -13,14 +13,20 @@
 # Check only few few lines anywehere on the file.
 #head -n 4923 metadata.tsv | tail -n 7
 # Do it on full terminal screen (exit pressing q).
-#head -n 4923 metadata.tsv | tail -n 7 | lees
+#head -n 4923 metadata.tsv | tail -n 7 | less
 
 # Check some lines and paste them on a file
 #head -n 4923 metadata.tsv | tail -n 7 > error.txt
 # Open the file
 #gedit error.txt
 
+# Count lines of file.
+#wc -l {file_name}
+
+# > overwrittes, >> appends and | pipes it to annother function.
+
 # Paste it on libre office and look for bugs.
+
 
 
 
