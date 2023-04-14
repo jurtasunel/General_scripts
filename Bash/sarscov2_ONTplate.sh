@@ -46,4 +46,15 @@ du -h {folder_name}
 # shows all memory, but also does pagination
 cat /proc/meminfo # ram is the first row, "MemTotal"
 
+# Report emails:
+Quality:
+jonathan.dean@ucd.ie, michael.carr@ucd.ie, zyandle@ucd.ie, charlene.bennett@ucd.ie, quynh.luu@ucd.ie, ursula.morley@ucd.ie, daniel.hare@ucd.ie, cliona.kenna@ucd.ie, joan.foxton@ucd.ie, andrea.crowley@ucd.ie, jose.urtasunelizari@ucd.ie, lucy.johnson@ucd.ie
 
+Lineage report:
+cillian.degascun@ucd.ie, jonathan.dean@ucd.ie, michael.carr@ucd.ie, charlene.bennett@ucd.ie, daniel.hare@ucd.ie, jose.urtasunelizari@ucd.ie, cliona.kenna@ucd.ie, chantale.lecours@ucd.ie
+
+TAT:
+cillian.degascun@ucd.ie, jonathan.dean@ucd.ie, daniel.hare@ucd.ie, michael.carr@ucd.ie, cliona.kenna@ucd.ie, jose.urtasunelizari@ucd.ie
+
+3Months:
+chantale.lecours@ucd.ie
