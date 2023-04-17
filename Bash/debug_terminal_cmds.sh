@@ -22,11 +22,18 @@
 
 # Count lines of file.
 #wc -l {file_name}
+# Count how many lines have a specific string.
+#cat {file_name} | grep "{string}" | wc -l
+# Print all lines with a substring on it on terminal
+#cat {file_name} | grep "{string}"
+
+# Replace all occurences on a file.
+#sed -i 's/{string_to_replace}/{replacement}/g' {file_name}
+
 
 # > overwrittes, >> appends and | pipes it to annother function.
 
 # Paste it on libre office and look for bugs.
-
 
 
 
