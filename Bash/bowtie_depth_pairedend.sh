@@ -7,14 +7,17 @@ reference="/home/josemari/Desktop/Jose/Reference_sequences/MN908947"
 # Create a variable to store the path for Rscripts.
 Rscripts="/home/josemari/Desktop/Jose/General_scripts/R"
 # Get the name of the fastq files and the episeq consensus.
-rawfastq_tag="L22IRL12528_S33_L001"
-Fw=${rawfastq_tag}"_R1_001.fastq.gz"
-Rv=${rawfastq_tag}"_R2_001.fastq.gz"
-episeq_cns=${rawfastq_tag}"_R_16069.consensus.fa"
+rawfastq_tag=("CS230191_S13" "CS230192_S14" "CS230195_S17" "CS230196_S18" "CS230201_S23")
+Fw=${rawfastq_tag}"_L001_R1_001.fastq.gz"
+Rv=${rawfastq_tag}"_L001_R2_001.fastq.gz"
+episeq_cns=${rawfastq_tag}".consensus.fasta"
 
 #COMANDS
 #Indexing
 #bowtie2-build '$param.ref' sarscov
+# Loop through the barcodes
+for i in ${rawfastq_tag[@]}; do
+
 # Align the input file to the reference with bowtie2 and write out a txt documment with unnaligned reads.
 echo Aligning ${rawfastq_tag} with bowtie2...
 bowtie2 --un ${rawfastq_tag}_not_aligned.txt -x ${reference} -1 ${Fw} -2 ${Rv} -S ${rawfastq_tag}.sam
@@ -53,5 +56,8 @@ mv Alignment_changes.csv ${rawfastq_tag}_Alignment_changes.csv
 mv ${rawfastq_tag}_not_aligned.txt ${rawfastq_tag}_depth.txt ${rawfastq_tag}_depth.pdf ${rawfastq_tag}_low_depth_positions.csv ${rawfastq_tag}_Alignment_changes.csv ${rawfastq_tag}_cns.fasta mafft_aligned.fasta ${rawfastq_tag}_results
 # Remove unnecesary files.
 rm ${rawfastq_tag}_srtd.bam ${rawfastq_tag}_srtd.bam.bai ${rawfastq_tag}_cns.fq fasta_to_align.fasta
+
+done
+
 
 
