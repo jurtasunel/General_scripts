@@ -37,3 +37,18 @@
 
 
 
+
+### Recover data from disk trash.
+# Display disk usage "human" readable.
+#df -h
+# Display "all" files, also hidden ones, with numeric data.
+#ls -nah
+# Display disk space.
+#du -h .Trash-1000/files/Old_Dell
+# Copy recursive from one location to another.
+#cp -r .Trash-1000/files/Old_Dell ~/Desktop/Old_Dell_recovered
+# Secure copy from another computer. Requires computer name and IP. "./" will copy it with the origin name.
+#scp -r gabriel@137.43.96.123:/home/gabriel/Desktop/Old_Dell_recovered ./
+# To get IP:
+#ifconfig
+# the IP is the number after the "inet" under "eno1"	
