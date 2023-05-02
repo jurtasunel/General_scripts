@@ -36,6 +36,13 @@
 # Paste it on libre office and look for bugs.
 
 
+# To kill process from terminal.
+#top # shows top processes and memory
+#k {terminal ID} # kills specific process.
+#9 # execute the kill order.
+
+# Additionally, to check that all process has terminated, run the following.
+#ps ax | grep "rstudio"
 
 
 ### Recover data from disk trash.
