@@ -7,7 +7,7 @@ reference="/home/josemari/Desktop/Jose/Reference_sequences/MN908947"
 # Create a variable to store the path for Rscripts.
 Rscripts="/home/josemari/Desktop/Jose/General_scripts/R"
 # Get the name of the fastq files and the episeq consensus.
-rawfastq_tag=("CS230275_S13" "CS230277_S22" "CS230278_S23" "CS230280_S25" "CS230286_S14" "CS230287_S27" "CS230288_S28" "CS230289_S29" "CS230290_S1")
+rawfastq_tag=("CS230278_S23" "CS230280_S25" "CS230286_S14" "CS230287_S27" "CS230288_S28" "CS230289_S29" "CS230290_S1")
 Fw=${rawfastq_tag}"_L001_R1_001.fastq.gz"
 Rv=${rawfastq_tag}"_L001_R2_001.fastq.gz"
 episeq_cns=${rawfastq_tag}".consensus.fasta"
