@@ -6,7 +6,7 @@ library(ape)
 library(TreeTools)
 
 # Get the location of the alignment fasta.
-fasta_path <- "/home/josemari/Desktop/Jose/Projects/Phylogeny_analysis/PaulGrier_28022023/mafft_aligned.fasta"
+fasta_path <- "/path/to/mafft_aligned.fasta"
 
 # Read in the file and get the reference.
 aln <- read.dna(fasta_path, format = "fasta")
