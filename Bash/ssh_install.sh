@@ -23,6 +23,8 @@ ip a
 sudo apt install net-tools
 ifconfig
 #The ip is the eno1 inet
+# New command for IP address:
+ip address show
 
 # Generate public/private key pair
 ssh-keygen
