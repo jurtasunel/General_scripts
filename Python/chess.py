@@ -1,10 +1,15 @@
-################################################################################
-### This script recreates a simple chess game on a command line terminal.    ###
-### Run it with "python3 chess.py" and follow the instructions on terminal.  ###
-### Author: Josemari Urtasun Elizari                                         ###
-### Last modified: Sept 23th, 2024                                           ###         
-################################################################################
+##################################################################################
+### This script recreates a simple chess game on a command line terminal.      ###
+### Run it with "python3 chess.py" and follow the instructions on terminal.    ###
+### The scafold and first steps of the script is based on the following video: ###
+### https://www.youtube.com/watch?v=QAHvwk3URjQ&ab_channel=RobertRutter        ###
+### Author: Josemari Urtasun Elizari                                           ###
+### Last modified: Nov 24th, 2024                                              ###         
+##################################################################################
 
+### Import libraries.
+import copy
+import pdb
 
 #################
 # Create board. #
@@ -263,35 +268,30 @@ def piece_check(piece, end_x, end_y, current_player, board):
         # If pawn connects with king by one diagonal square, it's check.
         if abs(end_x - king_x) == 1 and abs(end_y - king_y) == 1:
             if not (is_jumping(end_x, end_y, king_x, king_y, board)):
-                print(("\n   # Pawn CHECK!\n"))
-                return True
+                print((f"\n   # {current_player} Pawn CHECK!\n"))
         
     if list(piece)[1] == "R":
         # If rook connects with king in straight line without jumps, it's check.
         if end_x == king_x or end_y == king_y:
             if not (is_jumping(end_x, end_y, king_x, king_y, board)):
-                print("\n   # Rook CHECK!\n")
-                return True
+                print(f"\n   # {current_player} Rook CHECK!\n")
         
     if list(piece)[1] == "N":
         # If knight connects with king on L shape, it's check.
         if (abs(end_x - king_x) == 2 and abs(end_y - king_y)) or (abs(end_y - king_y) == 2 and abs(end_x - king_x)):
-            print("\n   # Knight CHECK!\n")
-            return True
+            print(f"\n   # {current_player} Knight CHECK!\n")
 
     if list(piece)[1] == "B":
         # If bishop connects with king diagonally without jumps, it's check.
         if abs(end_x - king_x) == abs(end_y - king_y):
             if not (is_jumping(end_x, end_y, king_x, king_y, board)):
-                print("\n   # Bishop CHECK!\n")
-                return True
+                print(f"\n   # {current_player} Bishop CHECK!\n")
 
     if list(piece)[1] == "Q":
         # If queen connects with king without jumps, it's check.
         if end_x == king_x or end_y == king_y or abs(end_x - king_x) == abs(end_y - king_y):
             if not (is_jumping(end_x, end_y, king_x, king_y, board)):
-                print("\n   # Queen CHECK!")
-                return True
+                print(f"\n   # {current_player} Queen CHECK!")
 
 # Check if board position has a check for the current player.
 def is_check(current_player, board):
@@ -451,21 +451,92 @@ def knight_illegal(start_x, start_y, end_x, end_y):
         print("\n   # Illegal move! Knights move in an 'L' shape (2 squares up/down and 1 square left/right, or 2 squares left/right and 1 square up/down), please try again.\n")
         return True
 
-def king_illegal(start_x, start_y, end_x, end_y, current_player, board):
+# def king_illegal(start_x, start_y, end_x, end_y):
+
+#     # Only allow 1 square movements. 
+#     if abs(start_x - end_x) != 1 and abs(start_y - end_y) != 1:
+#         print("\n   # Illegal move! Kings can only move one position straight or diagonally (except for castling), please try again.\n")
+#         return True    
+ 
+def king_illegal(start_x, start_y, end_x, end_y, current_player):
+
+    # Use the gloabl variable defined outside the function for castling.
+    global castle_flag
+
+    # Get move count of current player's king.
+    king_count = [wking if current_player == "White" else bking][0]
+
+    # Count how many checks are in the castling squares.
+    castlechecks = 0
+
+    # Allow 2 moves for castling if king didn't move yet.
+    if(abs(start_y - end_y) == 2 and abs(start_x - end_x) == 0 and king_count == 0):
+        
+        # Get positions of all enemy pieces that can give a check.
+        R_check = get_piece_position("R", "White" if current_player == "Black" else "Black", board)
+        N_check = get_piece_position("N", "White" if current_player == "Black" else "Black", board)
+        B_check = get_piece_position("B", "White" if current_player == "Black" else "Black", board)
+        Q_check = get_piece_position("Q", "White" if current_player == "Black" else "Black", board)
+        P_check = get_piece_position("P", "White" if current_player == "Black" else "Black", board)
+
+        # Get position of squares visited by king while castling. (W short is 7,4, 7,5, 7,6; W long is 7,4, 7,3, 7,2; B short is 0,4, 0,5, 0,6; B long is 0,4, 0,3, 0,2).
+        castle_x = [7 if current_player == "White" else 0][0]
+        castle_y_list = [[4, 5, 6] if end_y > start_y else [4, 3, 2]][0]
+
+        # Look for checks on these squares.
+        for castle_y in castle_y_list:
+        
+            for i in P_check:
+                x, y = i[0], i[1]
+                if abs(castle_x - x) == 1 and abs(castle_y - y) == 1:
+                    if not (is_jumping(castle_x, castle_y, x, y, board)):
+                        castlechecks = castlechecks + 1
+
+            for i in R_check:
+                x, y = i[0], i[1]
+                if castle_x == x or castle_y == y:
+                    if not(is_jumping(castle_x, castle_y, x, y, board)):
+                        castlechecks = castlechecks + 1
+        
+            for i in N_check:
+                x, y = i[0], i[1]
+                if (abs(castle_x - x) == 2 and abs(castle_y - y) == 1) or (abs(castle_x - x) == 1 and abs(castle_y - y) == 2):
+                    castlechecks = castlechecks + 1
+        
+            for i in B_check:
+                x, y = i[0], i[1]
+                if abs(castle_x - x) == abs(castle_y - y):
+                    if not(is_jumping(castle_x, castle_y, x, y, board)):
+                        castlechecks = castlechecks + 1
+        
+            for i in Q_check:
+                x, y = i[0], i[1]
+                if castle_x == x or castle_y == y or abs(castle_x - x) == abs(castle_y - y):
+                    if not(is_jumping(castle_x, castle_y, x, y, board)):
+                        castlechecks = castlechecks + 1
+
+        if castlechecks == 0:
+            castle_flag = True
+            return False
 
     # Only allow 1 square movements. 
-    if abs(start_x - end_x) != 1 and abs(start_y - end_y) != 1:
-        print("\n   # Illegal move! Kings can only move one position straight or diagonally (except for castling), please try again.\n")
+    elif abs(start_x - end_x) != 1 and abs(start_y - end_y) != 1:
+        print("\n   # Illegal move! Kings can only move one position straight or diagonally (except for castling, when they can move two positions), please try again.\n")
+        print("\n   # You can only castle if nor the king neither the rook have moved yet, and none of the squares visited by the king are in check .\n")
         return True    
- 
+
+# Update board for castling moves.
+def castle():
+    print("CASTLING")
 
 ###############
 # Make turns. #
 ###############
 
 current_turn = 1
-check_flag = False
-
+# Keep count of kings' moves, and make flag for castling.
+wking, bking = 0, 0
+castle_flag = False
 # Loop through turns.
 while (True):
 
@@ -474,7 +545,6 @@ while (True):
     print(f"\nTurn {current_turn}: {current_player} moves! \n")
     print_board(board, current_player)
     print("")
-    #print(f"\n    # You are in CHECK!\n" if check_flag == True else "")
     print('Make your move by typing the square of the piece you want to move,\nan empty space, and then the square you want to move it to\n(i.e.; "a2 a4", "g8 f6", etc).')
 
     # Keep asking for input squares until a legal move is provided.
@@ -539,28 +609,47 @@ while (True):
                 continue
 
         elif list(piece)[1] == "K":
-            if king_illegal(start_x, start_y, end_x, end_y, current_player, board):
+            if king_illegal(start_x, start_y, end_x, end_y, current_player):
                 continue
-        
-        
-        test_board = board
-        test_board[start_x][start_y] = "  "
-        test_board[end_x][end_y] = piece
 
-        if is_check(current_player, test_board):
-            print("STILL CHECK")
+        
+        ####################
+        # Look for checks. #
+        ####################
+
+        # Deepcopy needed to modify testboard WITHOUT changing original board.
+        testboard = copy.deepcopy(board)
+        # Make the input move on the test board
+        testboard[start_x][start_y] = "  "
+        testboard[end_x][end_y] = piece
+
+        # Don't allow the move to put the current player king in check.
+        if is_check(current_player, testboard):
             continue
+        
+        # Print check message if move creates check to oponent player.
+        piece_check(piece, end_x, end_y, current_player, board)
+
+        # Add count to king if it moved.
+        if list(piece)[1] == "K":
+            if current_player == "White":
+                wking = wking + 1
+            elif current_player == "Black":
+                bking = bking + 1
 
         # Break the while loop when none of the illegal actions functions returns a True. 
         break
-
-    # Turn check flag on after a check.
-    #if piece_check(piece, end_x, end_y, current_player, board):
-        #check_flag = True
     
-    # Update the board squares.
-    board[start_x][start_y] = "  " # Change the square to an empty square.
-    board[end_x][end_y] = piece # Add the piece to the new square.
+    # Castle if the castle flag is on (it is turned on by king_illega() function when the input move allows it).
+    if castle_flag == True:
+        castle()
+
+    # Update the squares of the board with the move.
+    else:
+        board[start_x][start_y] = "  " # Change the square to an empty square.
+        board[end_x][end_y] = piece # Add the piece to the new square.
+
+    castle_flag = False
 
     print(f"\n    ### End of turn {current_turn} ###")
     # Add next turn.
@@ -568,7 +657,9 @@ while (True):
 
 
 
-# Check if piece is pin.
 # Promotion.
-# Castling and En Passant
+# Castling
 # Checkmate end condition
+
+# Check move of rooks for castling.
+# En Passant
