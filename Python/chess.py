@@ -268,30 +268,30 @@ def piece_check(piece, end_x, end_y, current_player, board):
         # If pawn connects with king by one diagonal square, it's check.
         if abs(end_x - king_x) == 1 and abs(end_y - king_y) == 1:
             if not (is_jumping(end_x, end_y, king_x, king_y, board)):
-                print((f"\n   # {current_player} Pawn CHECK!\n"))
+                print((f"\n\n   # {current_player} Pawn CHECK!\n\n"))
         
     if list(piece)[1] == "R":
         # If rook connects with king in straight line without jumps, it's check.
         if end_x == king_x or end_y == king_y:
             if not (is_jumping(end_x, end_y, king_x, king_y, board)):
-                print(f"\n   # {current_player} Rook CHECK!\n")
+                print(f"\n\n   # {current_player} Rook CHECK!\n\n")
         
     if list(piece)[1] == "N":
         # If knight connects with king on L shape, it's check.
         if (abs(end_x - king_x) == 2 and abs(end_y - king_y)) or (abs(end_y - king_y) == 2 and abs(end_x - king_x)):
-            print(f"\n   # {current_player} Knight CHECK!\n")
+            print(f"\n\n   # {current_player} Knight CHECK!\n\n")
 
     if list(piece)[1] == "B":
         # If bishop connects with king diagonally without jumps, it's check.
         if abs(end_x - king_x) == abs(end_y - king_y):
             if not (is_jumping(end_x, end_y, king_x, king_y, board)):
-                print(f"\n   # {current_player} Bishop CHECK!\n")
+                print(f"\n\n   # {current_player} Bishop CHECK!\n\n")
 
     if list(piece)[1] == "Q":
         # If queen connects with king without jumps, it's check.
         if end_x == king_x or end_y == king_y or abs(end_x - king_x) == abs(end_y - king_y):
             if not (is_jumping(end_x, end_y, king_x, king_y, board)):
-                print(f"\n   # {current_player} Queen CHECK!")
+                print(f"\n\n   # {current_player} Queen CHECK!\n\n")
 
 # Check if board position has a check for the current player.
 def is_check(current_player, board):
@@ -340,6 +340,37 @@ def is_check(current_player, board):
             if not(is_jumping(king_x, king_y, x, y, board)):
                 print("\n   # Illegal move! Your king would be in CHECK by the Queen, please try again.\n")
                 return True
+
+# Update board for castling moves.
+def castle(start_x, start_y, end_x, end_y, current_player, piece):
+        
+    if current_player == "White" and end_y == 2:
+        board[start_x][start_y] = "  "
+        board[7][0] = "  "
+        board[end_x][end_y] = piece
+        board[7][3] = "wR"
+        print("\n   # White long castle!\n")
+
+    elif current_player == "White" and end_y == 6:
+        board[start_x][start_y] = "  "
+        board[7][7] = "  "
+        board[end_x][end_y] = piece
+        board[7][5] = "wR"
+        print("\n   # White short castle!\n")
+
+    elif current_player == "Black" and end_y == 2:
+        board[start_x][start_y] = "  "
+        board[0][0] = "  "
+        board[end_x][end_y] = piece
+        board[0][3] = "bR"
+        print("\n   # Black long castle!\n")
+
+    elif current_player == "Black" and end_y == 6:
+        board[start_x][start_y] = "  "
+        board[0][7] = "  "
+        board[end_x][end_y] = piece
+        board[0][5] = "bR"
+        print("\n   # Black short castle!\n")
 
 
 ####################
@@ -449,14 +480,7 @@ def knight_illegal(start_x, start_y, end_x, end_y):
 
     else:
         print("\n   # Illegal move! Knights move in an 'L' shape (2 squares up/down and 1 square left/right, or 2 squares left/right and 1 square up/down), please try again.\n")
-        return True
-
-# def king_illegal(start_x, start_y, end_x, end_y):
-
-#     # Only allow 1 square movements. 
-#     if abs(start_x - end_x) != 1 and abs(start_y - end_y) != 1:
-#         print("\n   # Illegal move! Kings can only move one position straight or diagonally (except for castling), please try again.\n")
-#         return True    
+        return True   
  
 def king_illegal(start_x, start_y, end_x, end_y, current_player):
 
@@ -464,13 +488,23 @@ def king_illegal(start_x, start_y, end_x, end_y, current_player):
     global castle_flag
 
     # Get move count of current player's king.
-    king_count = [wking if current_player == "White" else bking][0]
+    king_count = [moves_count["wking"] if current_player == "White" else moves_count["bking"]][0]
+    # Get move count of rook involved in castling.
+    rook_count = 0
+    if current_player == "White" and end_y == 2:
+        rook_count = moves_count["a1_rook"]
+    elif current_player == "White" and end_y == 6:
+        rook_count = moves_count["h1_rook"]
+    elif current_player == "Black" and end_y == 2:
+        rook_count = moves_count["a8_rook"]    
+    elif current_player == "Black" and end_y == 6:
+        rook_count = moves_count["h8_rook"]
 
     # Count how many checks are in the castling squares.
     castlechecks = 0
 
-    # Allow 2 moves for castling if king didn't move yet.
-    if(abs(start_y - end_y) == 2 and abs(start_x - end_x) == 0 and king_count == 0):
+    # Allow 2 moves for castling if king and rook didn't move yet.
+    if(abs(start_y - end_y) == 2 and abs(start_x - end_x) == 0 and king_count == 0 and rook_count == 0):
         
         # Get positions of all enemy pieces that can give a check.
         R_check = get_piece_position("R", "White" if current_player == "Black" else "Black", board)
@@ -515,19 +549,26 @@ def king_illegal(start_x, start_y, end_x, end_y, current_player):
                     if not(is_jumping(castle_x, castle_y, x, y, board)):
                         castlechecks = castlechecks + 1
 
+        # Turn on the castle flag if there are no checks.
         if castlechecks == 0:
             castle_flag = True
             return False
+        
+        else:
+            print("\n   # Illegal move! You can only castle if NOR the king NEITHER the rook have moved yet, and NONE of the squares visited by the king are in check.\n")
+            return True
 
     # Only allow 1 square movements. 
     elif abs(start_x - end_x) != 1 and abs(start_y - end_y) != 1:
-        print("\n   # Illegal move! Kings can only move one position straight or diagonally (except for castling, when they can move two positions), please try again.\n")
-        print("\n   # You can only castle if nor the king neither the rook have moved yet, and none of the squares visited by the king are in check .\n")
+        print("\n   # Illegal move! Kings can only move one position straight or diagonally (except for castling), please try again.\n")
+        print("\n   # Rules for castling: Kings can move two squares towards a rook.\n")
+        print("\n   # \n")
+        print("\n   # \n")
+        print("\n   # \n")
+
+
         return True    
 
-# Update board for castling moves.
-def castle():
-    print("CASTLING")
 
 ###############
 # Make turns. #
@@ -536,6 +577,7 @@ def castle():
 current_turn = 1
 # Keep count of kings' moves, and make flag for castling.
 wking, bking = 0, 0
+moves_count = {"a1_rook" : 0,"h1_rook" : 0, "a8_rook" : 0, "h8_rook" : 0, "wking" : 0, "bking" : 0}
 castle_flag = False
 # Loop through turns.
 while (True):
@@ -545,10 +587,11 @@ while (True):
     print(f"\nTurn {current_turn}: {current_player} moves! \n")
     print_board(board, current_player)
     print("")
-    print('Make your move by typing the square of the piece you want to move,\nan empty space, and then the square you want to move it to\n(i.e.; "a2 a4", "g8 f6", etc).')
+    print('Make your move by typing the square of the piece you want to move, an empty space, and then the square you want to move it to (i.e.; "a2 a4", "g8 f6", etc).')
 
     # Keep asking for input squares until a legal move is provided.
     while (True):
+
 
         ########################################################
         # Get input move from terminal and check wrong inputs. #
@@ -630,25 +673,40 @@ while (True):
         # Print check message if move creates check to oponent player.
         piece_check(piece, end_x, end_y, current_player, board)
 
-        # Add count to king if it moved.
+
+        ########################################################################
+        # Add move counts for pieces on special movements (castling and pawns) #
+        ########################################################################
+
+        # Add count to piceces movement if needed.
         if list(piece)[1] == "K":
             if current_player == "White":
-                wking = wking + 1
+                moves_count["wking"] = moves_count["wking"] + 1
             elif current_player == "Black":
-                bking = bking + 1
+                moves_count["bking"] = moves_count["bking"] + 1
+        elif list(piece)[1] == "R":
+            if start_x == 7 and start_y == 0:
+                moves_count["a1_rook"] = moves_count["a1_rook"] + 1
+            elif start_x == 7 and start_y == 7:
+                moves_count["h1_rook"] = moves_count["h1_rook"] + 1
+            elif start_x == 0 and start_y == 0:
+                moves_count["a8_rook"] = moves_count["a8_rook"] + 1
+            elif start_x == 0 and start_y == 7:
+                moves_count["h8_rook"] = moves_count["h8_rook"] + 1
 
         # Break the while loop when none of the illegal actions functions returns a True. 
         break
-    
+
     # Castle if the castle flag is on (it is turned on by king_illega() function when the input move allows it).
     if castle_flag == True:
-        castle()
+        castle(start_x, start_y, end_x, end_y, current_player, piece)
 
     # Update the squares of the board with the move.
     else:
         board[start_x][start_y] = "  " # Change the square to an empty square.
         board[end_x][end_y] = piece # Add the piece to the new square.
 
+    # Turn of the castling flag.
     castle_flag = False
 
     print(f"\n    ### End of turn {current_turn} ###")
@@ -658,8 +716,9 @@ while (True):
 
 
 # Promotion.
-# Castling
 # Checkmate end condition
 
-# Check move of rooks for castling.
 # En Passant
+# Repetition draw.
+# Resign
+# Stalemate
