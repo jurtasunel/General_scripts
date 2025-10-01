@@ -4,7 +4,7 @@
 ### The scafold and first steps of the script is based on the following video: ###
 ### https://www.youtube.com/watch?v=QAHvwk3URjQ&ab_channel=RobertRutter        ###
 ### Author: Josemari Urtasun Elizari                                           ###
-### Last modified: Nov 24th, 2024                                              ###         
+### Last modified: Oct 1st, 2025                                               ###         
 ##################################################################################
 
 ### Import libraries.
@@ -18,7 +18,6 @@ import pdb
 # Create board as a matrix of 8 by 8 and fill it with empty spaces.
 board = [""] * 8
 for i in range(len(board)):
-
     board[i] = ["  "] * 8
 # Make function to take in 8x8 matrix and return labeled board.
 def print_board(board_matrix, current_player):
@@ -278,7 +277,7 @@ def piece_check(piece, end_x, end_y, current_player, board):
         
     if list(piece)[1] == "N":
         # If knight connects with king on L shape, it's check.
-        if (abs(end_x - king_x) == 2 and abs(end_y - king_y)) or (abs(end_y - king_y) == 2 and abs(end_x - king_x)):
+        if (abs(end_x - king_x) == 2 and abs(end_y - king_y) == 1) or (abs(end_y - king_y) == 2 and abs(end_x - king_x) == 1):
             print(f"\n\n   # {current_player} Knight CHECK!\n\n")
 
     if list(piece)[1] == "B":
@@ -371,8 +370,27 @@ def castle(start_x, start_y, end_x, end_y, current_player, piece):
         board[end_x][end_y] = piece
         board[0][5] = "bR"
         print("\n   # Black short castle!\n")
+    
+    # Turn of the castling flag.
+    castle_flag = False
 
+# Update board for promoting moves.
+def promote(end_x, end_y, current_player):
+    
+    print(f"\n   # {current_player} promotes a Pawn!\n")
+    while(True):
 
+        # Get promotion choice from player.
+        promotion_choice = input("\n   # Choose your piece by typing N for Knight, B for Bishop, R for Rook or Q for Queen:").strip().upper()
+        if promotion_choice in ("N", "B", "R", "Q"):
+            break
+        print("\n   # WRONG FORMAT! Please make sure to check the correct format and try again.")
+    
+    # Make new piece and update the board.
+    new_piece = current_player[0].lower() + promotion_choice
+    board[end_x][end_y] = new_piece
+    
+    
 ####################
 # Pieces movement. #
 ####################
@@ -560,13 +578,12 @@ def king_illegal(start_x, start_y, end_x, end_y, current_player):
 
     # Only allow 1 square movements. 
     elif abs(start_x - end_x) != 1 and abs(start_y - end_y) != 1:
-        print("\n   # Illegal move! Kings can only move one position straight or diagonally (except for castling), please try again.\n")
-        print("\n   # Rules for castling: Kings can move two squares towards a rook.\n")
-        print("\n   # \n")
-        print("\n   # \n")
-        print("\n   # \n")
-
-
+        print("\n   # Illegal move! Kings can only move one position straight or diagonally (except for castling), please try again.")
+        print("   # Rules for castling: Once per game, you can move your king two squares toward a rook, and the rook moves next to the king to its opposite side Only allowed if:")
+        print("\n   # - Neither the king nor the rook has previously moved.\n")
+        print("\n   # - There are no pieces between the king and the rook.\n")
+        print("\n   # - The king is not currently in check.\n")
+        print("\n   # - The king doesn't pass through or finish on a square where it would be in check.\n")
         return True    
 
 
@@ -579,6 +596,7 @@ current_turn = 1
 wking, bking = 0, 0
 moves_count = {"a1_rook" : 0,"h1_rook" : 0, "a8_rook" : 0, "h8_rook" : 0, "wking" : 0, "bking" : 0}
 castle_flag = False
+passant_flag = False
 # Loop through turns.
 while (True):
 
@@ -597,7 +615,7 @@ while (True):
         # Get input move from terminal and check wrong inputs. #
         ########################################################
 
-        input_move = input("Enter your move:").lower() 
+        input_move = input("Enter your move:").strip().lower() 
 
         # Don't allow wrongly formated inputs.
         if is_wrong_input(input_move):
@@ -706,19 +724,22 @@ while (True):
         board[start_x][start_y] = "  " # Change the square to an empty square.
         board[end_x][end_y] = piece # Add the piece to the new square.
 
-    # Turn of the castling flag.
-    castle_flag = False
+    # Promote if a pawn reaches the last row (list 0 for white, list 7 for black).
+    if list(piece)[1] == "P" and end_x in (0,7):
+        promote(end_x, end_y, current_player)
 
     print(f"\n    ### End of turn {current_turn} ###")
     # Add next turn.
     current_turn += 1
+    # Save the current board to check for En Passant possibility on next turn.
+    previous_board = copy.deepcopy(board)
 
 
-
-# Promotion.
+# TODO: 
 # Checkmate end condition
-
+# Stalemate
 # En Passant
 # Repetition draw.
 # Resign
-# Stalemate
+# keep track of captures
+# print list of moves
