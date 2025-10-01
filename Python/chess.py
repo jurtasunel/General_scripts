@@ -310,34 +310,34 @@ def is_check(current_player, board):
         x, y = i[0], i[1]
         if abs(king_x - x) == 1 and abs(king_y - y) == 1:
             if not (is_jumping(king_x, king_y, x, y, board)):
-                print("\n   # Illegal move! Your king would be in CHECK by a Pawn, please try again.\n")
+                print("\n   # Illegal move! Your king would be in CHECK by a Pawn, please move your king away from the check.\n")
                 return True
             
     for i in R_check:
         x, y = i[0], i[1]
         if king_x == x or king_y == y:
             if not(is_jumping(king_x, king_y, x, y, board)):
-                print("\n   # Illegal move! Your king would be in CHECK by a Rook, please try again.\n")
+                print("\n   # Illegal move! Your king would be in CHECK by a Rook, please move your king away from the check.\n")
                 return True
     
     for i in N_check:
         x, y = i[0], i[1]
         if (abs(king_x - x) == 2 and abs(king_y - y) == 1) or (abs(king_x - x) == 1 and abs(king_y - y) == 2):
-                print("\n   # Illegal move! Your king would be in CHECK by a Knight, please try again.\n")
+                print("\n   # Illegal move! Your king would be in CHECK by a Knight, please move your king away from the check.\n")
                 return True
     
     for i in B_check:
         x, y = i[0], i[1]
         if abs(king_x - x) == abs(king_y - y):
             if not(is_jumping(king_x, king_y, x, y, board)):
-                print("\n   # Illegal move! Your king would be in CHECK by a Bishop, please try again.\n")
+                print("\n   # Illegal move! Your king would be in CHECK by a Bishop, please move your king away from the check.\n")
                 return True
     
     for i in Q_check:
         x, y = i[0], i[1]
         if king_x == x or king_y == y or abs(king_x - x) == abs(king_y - y):
             if not(is_jumping(king_x, king_y, x, y, board)):
-                print("\n   # Illegal move! Your king would be in CHECK by the Queen, please try again.\n")
+                print("\n   # Illegal move! Your king would be in CHECK by the Queen, please move your king away from the check.\n")
                 return True
 
 # Update board for castling moves.
