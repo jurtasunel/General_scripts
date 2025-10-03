@@ -179,14 +179,15 @@ def is_empty(square):
         return True
 
 # Check if end square is ocupied with a piece of the same color of the player.
-def same_color_end_square(end_square, current_player):
+def same_color_end_square(end_square, current_player, silent = False):
     
     if (list(end_square)[0] == "w" and current_player == "White") or (list(end_square)[0] == "b" and current_player == "Black"):
-        print("\n   # You selected an end square with a piece OF YOUR OWN, please try a different square.\n   'One is company, two is a crowd...'\n")
+        if not silent:
+            print("\n   # You selected an end square with a piece OF YOUR OWN, please try a different square.\n   'One is company, two is a crowd...'\n")
         return True
 
 # Check if move is jumping over pieces.
-def is_jumping(start_x, start_y, end_x, end_y, board):
+def is_jumping(start_x, start_y, end_x, end_y, board, silent = False):
 
     # Make list to store jumps.
     jumps = []
@@ -229,7 +230,8 @@ def is_jumping(start_x, start_y, end_x, end_y, board):
 
     # Check if any jumps were found.
     if len(jumps) > 0:
-        print("\n   # Illegal move! That piece can't jump over other pieces.\n   'Look before you leap...'\n")
+        if not silent:
+            print("\n   # Illegal move! That piece can't jump over other pieces.\n   'Look before you leap...'\n")
         return True
     
 # Get list of positions of a piece type from one player.
@@ -266,13 +268,13 @@ def piece_check(piece, end_x, end_y, current_player, board):
     if list(piece)[1] == "P":
         # If pawn connects with king by one diagonal square, it's check.
         if abs(end_x - king_x) == 1 and abs(end_y - king_y) == 1:
-            if not (is_jumping(end_x, end_y, king_x, king_y, board)):
+            if not (is_jumping(end_x, end_y, king_x, king_y, board, silent = True)):
                 print((f"\n\n   # {current_player} Pawn CHECK!\n\n"))
         
     if list(piece)[1] == "R":
         # If rook connects with king in straight line without jumps, it's check.
         if end_x == king_x or end_y == king_y:
-            if not (is_jumping(end_x, end_y, king_x, king_y, board)):
+            if not (is_jumping(end_x, end_y, king_x, king_y, board, silent = True)):
                 print(f"\n\n   # {current_player} Rook CHECK!\n\n")
         
     if list(piece)[1] == "N":
@@ -283,17 +285,17 @@ def piece_check(piece, end_x, end_y, current_player, board):
     if list(piece)[1] == "B":
         # If bishop connects with king diagonally without jumps, it's check.
         if abs(end_x - king_x) == abs(end_y - king_y):
-            if not (is_jumping(end_x, end_y, king_x, king_y, board)):
+            if not (is_jumping(end_x, end_y, king_x, king_y, board, silent = True)):
                 print(f"\n\n   # {current_player} Bishop CHECK!\n\n")
 
     if list(piece)[1] == "Q":
         # If queen connects with king without jumps, it's check.
         if end_x == king_x or end_y == king_y or abs(end_x - king_x) == abs(end_y - king_y):
-            if not (is_jumping(end_x, end_y, king_x, king_y, board)):
+            if not (is_jumping(end_x, end_y, king_x, king_y, board, silent = True)):
                 print(f"\n\n   # {current_player} Queen CHECK!\n\n")
 
 # Check if board position has a check for the current player.
-def is_check(current_player, board):
+def is_check(current_player, board, silent = False):
 
     # Get positions of all enemy pieces that can give a check.
     R_check = get_piece_position("R", "White" if current_player == "Black" else "Black", board)
@@ -309,39 +311,49 @@ def is_check(current_player, board):
     for i in P_check:
         x, y = i[0], i[1]
         if abs(king_x - x) == 1 and abs(king_y - y) == 1:
-            if not (is_jumping(king_x, king_y, x, y, board)):
-                print("\n   # Illegal move! Your king would be in CHECK by a Pawn, please move your king away from the check.\n")
+            if not (is_jumping(king_x, king_y, x, y, board, silent = True)):
+                if not silent:
+                    print("\n   # Illegal move! Your king would be in CHECK by a Pawn, please move your king away from the check.\n")
                 return True
             
     for i in R_check:
         x, y = i[0], i[1]
         if king_x == x or king_y == y:
-            if not(is_jumping(king_x, king_y, x, y, board)):
-                print("\n   # Illegal move! Your king would be in CHECK by a Rook, please move your king away from the check.\n")
+            if not(is_jumping(king_x, king_y, x, y, board, silent = True)):
+                if not silent:
+                    print("\n   # Illegal move! Your king would be in CHECK by a Rook, please move your king away from the check.\n")
                 return True
     
     for i in N_check:
         x, y = i[0], i[1]
         if (abs(king_x - x) == 2 and abs(king_y - y) == 1) or (abs(king_x - x) == 1 and abs(king_y - y) == 2):
+            if not silent:
                 print("\n   # Illegal move! Your king would be in CHECK by a Knight, please move your king away from the check.\n")
-                return True
+            return True
     
     for i in B_check:
         x, y = i[0], i[1]
         if abs(king_x - x) == abs(king_y - y):
-            if not(is_jumping(king_x, king_y, x, y, board)):
-                print("\n   # Illegal move! Your king would be in CHECK by a Bishop, please move your king away from the check.\n")
+            if not(is_jumping(king_x, king_y, x, y, board, silent = True)):
+                if not silent:
+                    print("\n   # Illegal move! Your king would be in CHECK by a Bishop, please move your king away from the check.\n")
                 return True
     
     for i in Q_check:
         x, y = i[0], i[1]
         if king_x == x or king_y == y or abs(king_x - x) == abs(king_y - y):
-            if not(is_jumping(king_x, king_y, x, y, board)):
-                print("\n   # Illegal move! Your king would be in CHECK by the Queen, please move your king away from the check.\n")
+            if not(is_jumping(king_x, king_y, x, y, board, silent = True)):
+                if not silent:
+                    print("\n   # Illegal move! Your king would be in CHECK by the Queen, please move your king away from the check.\n")
                 return True
+
+    return False
 
 # Update board for castling moves.
 def castle(start_x, start_y, end_x, end_y, current_player, piece):
+    
+    # Allow reasigning a global flag.
+    global castle_flag
         
     if current_player == "White" and end_y == 2:
         board[start_x][start_y] = "  "
@@ -374,6 +386,28 @@ def castle(start_x, start_y, end_x, end_y, current_player, piece):
     # Turn of the castling flag.
     castle_flag = False
 
+# Update board for En Passant captures.
+def enpassant(start_x, start_y, end_x, end_y, current_player):
+    
+    # Allow reasigning a global flag.
+    global enpassant_flag
+    
+    print(f"\n   # {current_player} captures a pawn En Passant!\n")
+    if current_player == "White":
+        # Make move.
+        board[start_x][start_y] = "  "
+        board[end_x][end_y] = "wP"
+        # Capture enemy pawn.
+        board[start_x][end_y] = "  "
+        
+    elif current_player == "Black":
+        board[start_x][start_y] = "  "
+        board[end_x][end_y] = "bP"
+        board[start_x][end_y] = "  "
+    
+    # Turn off the enpassant flag.
+    enpassant_flag = False
+    
 # Update board for promoting moves.
 def promote(end_x, end_y, current_player):
     
@@ -381,7 +415,7 @@ def promote(end_x, end_y, current_player):
     while(True):
 
         # Get promotion choice from player.
-        promotion_choice = input("\n   # Choose your piece by typing N for Knight, B for Bishop, R for Rook or Q for Queen:").strip().upper()
+        promotion_choice = input("\n   # Choose your piece by typing 'N' for Knight, 'B' for Bishop, 'R' for Rook or 'Q' for Queen:").strip().upper()
         if promotion_choice in ("N", "B", "R", "Q"):
             break
         print("\n   # WRONG FORMAT! Please make sure to check the correct format and try again.")
@@ -389,118 +423,224 @@ def promote(end_x, end_y, current_player):
     # Make new piece and update the board.
     new_piece = current_player[0].lower() + promotion_choice
     board[end_x][end_y] = new_piece
+
+# Check if board position is a checkmate after making a move.    
+def is_checkmate(current_player):
     
+    # Get the opponent colour.
+    opponent = "White" if current_player == "Black" else "Black"
     
+    # If opponent is not in check, return false.
+    if not is_check(opponent, board, silent = True):
+        return False
+          
+    # If check, assume checkmate.
+    checkmate = True
+        
+    # Get possition of every piece.
+    for start_x in range(8):
+        for start_y in range(8):
+            piece = board[start_x][start_y]
+            if piece == "  ": # Skip empty squares.
+                continue
+                
+            # Loop through every position of each opponent piece.
+            if (opponent == "White" and list(piece)[0] == "w") or (opponent == "Black" and list(piece)[0] == "b"):
+                for end_x in range(8):
+                    for end_y in range(8):
+                        if start_x == end_x and start_y == end_y: # Skip the same square.
+                            continue
+                            
+                        # Skip illegal piece moves.
+                        illegal = False
+                        if piece[1] == "P":
+                            illegal = pawn_illegal(start_x, start_y, end_x, end_y, opponent, silent = True)
+                        if piece[1] == "R":
+                            illegal = rook_illegal(start_x, start_y, end_x, end_y, silent = True)
+                        if piece[1] == "B":
+                            illegal = bishop_illegal(start_x, start_y, end_x, end_y, silent = True)
+                        if piece[1] == "Q":
+                            illegal = queen_illegal(start_x, start_y, end_x, end_y, silent = True)
+                        if piece[1] == "N":
+                            illegal = knight_illegal(start_x, start_y, end_x, end_y, silent = True)
+                        if piece[1] == "K":
+                            illegal = king_illegal(start_x, start_y, end_x, end_y, opponent, silent = True)
+                        if illegal:
+                            continue
+                            
+                        # Skip not allowed jumps.
+                        if piece[1] not in ("K", "N"):
+                            if is_jumping(start_x, start_y, end_x, end_y, board, silent = True):
+                                continue
+                            
+                        # Skip end squares of same colour.
+                        if same_color_end_square(board[end_x][end_y], opponent, silent = True):
+                            continue
+                            
+                        # Simulate the move on a test board.
+                        testboard = copy.deepcopy(board)
+                        testboard[end_x][end_y] = piece
+                        testboard[start_x][start_y] = "  "
+                            
+                        # If the move escapes the check, is not checkmate.
+                        if not is_check(opponent, testboard, silent = True):
+                            checkmate = False
+                            break
+                        
+                    # Exit the outer loops as soon as one move escapes the checkmate.
+                    if checkmate == False:
+                        break         
+            if checkmate == False:
+                break
+        if checkmate == False:
+            break
+    
+    return checkmate
+    
+   
 ####################
 # Pieces movement. #
 ####################
 
 # Check illegal moves for pieces.
-def pawn_illegal(start_x, start_y, end_x, end_y, current_player):
+def pawn_illegal(start_x, start_y, end_x, end_y, current_player, silent = False):
+    
+    # Use the global variable to allow En Passant captures.
+    global enpassant_flag
 
-        # Check illegal for white.
-        if current_player == "White":
+    # Check illegal for white.
+    if current_player == "White":
 
-            # Panws can't move backwards.
-            if start_x - end_x < 1:
+        # Panws can't move backwards.
+        if start_x - end_x < 1:
+            if not silent:
                 print("\n   # Illegal move! Pawns can only move forward, please try again.\n")
-                return True
-            
-            # On first move, pawns can move 1 or 2 forward.
-            if start_x == 6:
-                if start_x - end_x > 2 or start_x - end_x < 1:
+            return True
+        
+        # On first move, pawns can move 1 or 2 forward.
+        if start_x == 6:
+            if start_x - end_x > 2 or start_x - end_x < 1:
+                if not silent:
                     print("\n   # Illegal move! Pawns can't move forward more than 2 squares on the first move, please try again.\n")
-                    return True    
+                return True    
                 
-            # After first move, pawns only move 1 forward.
-            elif start_x - end_x != 1:
+        # After first move, pawns only move 1 forward.
+        elif start_x - end_x != 1:
+            if not silent:
                 print("\n   # Illegal move! Pawns can't move forward more than 1 square after the first move, please try again.\n")
-                return True
+            return True
             
-            # Pawns can't move one forward to capture.
-            if start_y == end_y and list(board[end_x][end_y])[0] == "b":
+        # Pawns can't move one forward to capture.
+        if start_y == end_y and list(board[end_x][end_y])[0] == "b":
+            if not silent:
                 print("\n   # Illegal move! Pawns can't capture by moving forward, please try again.\n")
-                return True
+            return True
 
-            # Can't move diagonally more than one position.
-            if abs(start_y - end_y) > 1:
-                print("\n   # Illegal move! Pawns can't move diagonally more than one move, please try again.\n")
-                return True
+        # Can't move diagonally more than one position.
+        if abs(start_y - end_y) > 1:
+            if not silent:
+                print("\n   # Illegal move! Pawns can't move diagonally more than one position, please try again.\n")
+            return True
             
-            # Can move diagonally only for capturing.
-            if abs(start_y - end_y) == 1:
-                if list(board[end_x][end_y])[0] != "b":
+        # Can move diagonally only for capturing.
+        if abs(start_y - end_y) == 1:
+            
+            # Check if move is En Passant movement.
+            if start_x == 3 and board[start_x][end_y] == "bP" and board[end_x][end_y] == "  " and previous_board[end_x - 1][end_y] == "bP":
+                    # Turn on En Passant flag.
+                    enpassant_flag = True
+                    return False
+
+            elif list(board[end_x][end_y])[0] != "b":
+                if not silent:
                     print("\n   #  Illegal move! Pawn can only move diagonally to capture a piece, please try again.\n")
-                    return True
+                return True
 
-        # Check illegal for black, same as white but invering order of operations and starting squares.
-        if current_player == "Black":
+    # Check illegal for black, same as white but invering order of operations and starting squares.
+    if current_player == "Black":
 
-            if end_x - start_x < 1:
+        if end_x - start_x < 1:
+            if not silent:
                 print("\n   # Illegal move! Pawns can only move forward, please try again.\n")
-                return True
+            return True
             
-            if start_x == 1:
-                if end_x - start_x > 2 or end_x - start_x < 1:
+        if start_x == 1:
+            if end_x - start_x > 2 or end_x - start_x < 1:
+                if not silent:
                     print("\n   # Illegal move! Pawns can't move forward more than 2 squares on the first move, please try again.\n")
-                    return True    
+                return True    
                 
-            elif end_x - start_x != 1:
+        elif end_x - start_x != 1:
+            if not silent:
                 print("\n   # Illegal move! Pawns can't move forward more than 1 square after the first move, please try again.\n")
-                return True
+            return True
 
-            if start_y == end_y and list(board[end_x][end_y])[0] == "w":
+        if start_y == end_y and list(board[end_x][end_y])[0] == "w":
+            if not silent:
                 print("\n   # Illegal move! Pawns can't capture by moving forward, please try again.\n")
-                return True
+            return True
             
-            if abs(start_y - end_y) > 1:
-                print("\n   # Illegal move! Pawns can't move diagonally more than one move, please try again.\n")
-                return True
+        if abs(start_y - end_y) > 1:
+            if not silent:
+                print("\n   # Illegal move! Pawns can't move diagonally more than one position, please try again.\n")
+            return True
             
-            if abs(start_y - end_y) == 1:
-                if list(board[end_x][end_y])[0] != "w":
+        if abs(start_y - end_y) == 1:
+            
+            if start_x == 4 and board[start_x][end_y] == "wP" and board[end_x][end_y] == "  " and previous_board[end_x + 1][end_y] == "wP":
+                    enpassant_flag = True
+                    return False
+                
+            elif list(board[end_x][end_y])[0] != "w":
+                if not silent:
                     print("\n   #  Illegal move! Pawn can only move diagonally to capture a piece, please try again.\n")
-                    return True
+                return True
 
-def rook_illegal(start_x, start_y, end_x, end_y):
+def rook_illegal(start_x, start_y, end_x, end_y, silent = False):
 
     # Check if move is not in a straight line.
     if start_x != end_x and start_y != end_y:
-        print("\n   # Illegal move! Rooks can only move in a straight line, please try again.\n")
+        if not silent:
+            print("\n   # Illegal move! Rooks can only move in a straight line, please try again.\n")
         return True
 
-def bishop_illegal(start_x, start_y, end_x, end_y):
+def bishop_illegal(start_x, start_y, end_x, end_y, silent = False):
 
     # Check if move is not in diagonal line.
     if abs(start_x - end_x) != abs(start_y - end_y):
-        print("\n   # Illegal move! Bishops can only move diagonally, please try again.\n")
+        if not silent:
+            print("\n   # Illegal move! Bishops can only move diagonally, please try again.\n")
         return True
 
-def queen_illegal(start_x, start_y, end_x, end_y):
+def queen_illegal(start_x, start_y, end_x, end_y, silent = False):
 
     # Check if move is not in a straigt or diagnoal line.
     if start_x != end_x and start_y != end_y and abs(start_x - end_x) != abs(start_y - end_y):
-        print("\n   # Illegal move! Queens can only move straight or diagonally, please try again.\n")
+        if not silent:
+            print("\n   # Illegal move! Queens can only move straight or diagonally, please try again.\n")
         return True      
 
-def knight_illegal(start_x, start_y, end_x, end_y):
+def knight_illegal(start_x, start_y, end_x, end_y, silent = False):
 
     # Only allow movements where x moves 2 and y one, or vice versa.
     if abs(start_x - end_x) == 2:
         if abs(start_y - end_y) != 1:
-            print("\n   # Illegal move! Knights move in an 'L' shape (2 squares up/down and 1 square left/right, or 2 squares left/right and 1 square up/down), please try again.\n")
+            if not silent:
+                print("\n   # Illegal move! Knights move in an 'L' shape (2 squares up/down and 1 square left/right, or 2 squares left/right and 1 square up/down), please try again.\n")
             return True
 
     elif abs(start_y - end_y) == 2:
         if abs(start_x - end_x) != 1:
-            print("\n   # Illegal move! Knights move in an 'L' shape (2 squares up/down and 1 square left/right, or 2 squares left/right and 1 square up/down), please try again.\n")
+            if not silent:
+                print("\n   # Illegal move! Knights move in an 'L' shape (2 squares up/down and 1 square left/right, or 2 squares left/right and 1 square up/down), please try again.\n")
             return True
 
     else:
-        print("\n   # Illegal move! Knights move in an 'L' shape (2 squares up/down and 1 square left/right, or 2 squares left/right and 1 square up/down), please try again.\n")
+        if not silent:
+            print("\n   # Illegal move! Knights move in an 'L' shape (2 squares up/down and 1 square left/right, or 2 squares left/right and 1 square up/down), please try again.\n")
         return True   
  
-def king_illegal(start_x, start_y, end_x, end_y, current_player):
+def king_illegal(start_x, start_y, end_x, end_y, current_player, silent = False):
 
     # Use the gloabl variable defined outside the function for castling.
     global castle_flag
@@ -573,17 +713,19 @@ def king_illegal(start_x, start_y, end_x, end_y, current_player):
             return False
         
         else:
-            print("\n   # Illegal move! You can only castle if NOR the king NEITHER the rook have moved yet, and NONE of the squares visited by the king are in check.\n")
+            if not silent:
+                print("\n   # Illegal move! You can only castle if NOR the king NEITHER the rook have moved yet, and NONE of the squares visited by the king are in check.\n")
             return True
 
     # Only allow 1 square movements. 
-    elif abs(start_x - end_x) != 1 and abs(start_y - end_y) != 1:
-        print("\n   # Illegal move! Kings can only move one position straight or diagonally (except for castling), please try again.")
-        print("   # Rules for castling: Once per game, you can move your king two squares toward a rook, and the rook moves next to the king to its opposite side Only allowed if:")
-        print("\n   # - Neither the king nor the rook has previously moved.\n")
-        print("\n   # - There are no pieces between the king and the rook.\n")
-        print("\n   # - The king is not currently in check.\n")
-        print("\n   # - The king doesn't pass through or finish on a square where it would be in check.\n")
+    elif abs(start_x - end_x) > 1 or abs(start_y - end_y) > 1:
+        if not silent:
+            print("\n   # Illegal move! Kings can only move one position straight or diagonally (except for castling), please try again.")
+            print("   # Rules for castling: Once per game, you can move your king two squares toward a rook, and the rook moves next to the king to its opposite side Only allowed if:")
+            print("   # - Neither the king nor the rook has previously moved.\n")
+            print("   # - There are no pieces between the king and the rook.\n")
+            print("   # - The king is not currently in check.\n")
+            print("   # - The king doesn't pass through or finish on a square where it would be in check.\n")
         return True    
 
 
@@ -596,7 +738,7 @@ current_turn = 1
 wking, bking = 0, 0
 moves_count = {"a1_rook" : 0,"h1_rook" : 0, "a8_rook" : 0, "h8_rook" : 0, "wking" : 0, "bking" : 0}
 castle_flag = False
-passant_flag = False
+enpassant_flag = False
 # Loop through turns.
 while (True):
 
@@ -645,9 +787,9 @@ while (True):
                 continue
 
 
-        ###############################################
-        # Forbide illegal moves for the chosen piece. #
-        ###############################################
+        ##############################################
+        # Forbid illegal moves for the chosen piece. #
+        ##############################################
         
         if list(piece)[1] == "P":
             if pawn_illegal(start_x, start_y, end_x, end_y, current_player):
@@ -680,7 +822,7 @@ while (True):
 
         # Deepcopy needed to modify testboard WITHOUT changing original board.
         testboard = copy.deepcopy(board)
-        # Make the input move on the test board
+        # Make the input move on the test board.
         testboard[start_x][start_y] = "  "
         testboard[end_x][end_y] = piece
 
@@ -715,10 +857,17 @@ while (True):
         # Break the while loop when none of the illegal actions functions returns a True. 
         break
 
-    # Castle if the castle flag is on (it is turned on by king_illega() function when the input move allows it).
+    # Save the current board before moving to check for En Passant possibility on next turn.
+    previous_board = copy.deepcopy(board)
+    
+    # Castle if the castle flag is on (it is turned on by king_illegal() function when the input move allows it).
     if castle_flag == True:
         castle(start_x, start_y, end_x, end_y, current_player, piece)
 
+    # Move En Passant if the enpassant flag is on (it is turned on by pawn illegal() when the input move allows it).
+    if enpassant_flag == True:
+        enpassant(start_x, start_y, end_x, end_y, current_player)
+    
     # Update the squares of the board with the move.
     else:
         board[start_x][start_y] = "  " # Change the square to an empty square.
@@ -728,18 +877,25 @@ while (True):
     if list(piece)[1] == "P" and end_x in (0,7):
         promote(end_x, end_y, current_player)
 
+    # Print checkmate message and exit the loop if move produces a checkmate.
+    if is_checkmate(current_player):
+        print(f"\n   ##################\n")
+        print(f"   ### Checkmate  ### {current_player} player wins. Good game! ###\n")
+        print(f"   ##################\n")
+        break         
+    
     print(f"\n    ### End of turn {current_turn} ###")
     # Add next turn.
     current_turn += 1
-    # Save the current board to check for En Passant possibility on next turn.
-    previous_board = copy.deepcopy(board)
+   
 
 
 # TODO: 
 # Checkmate end condition
 # Stalemate
-# En Passant
 # Repetition draw.
 # Resign
 # keep track of captures
 # print list of moves
+
+
