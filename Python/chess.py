@@ -52,9 +52,9 @@ def print_board(board_matrix, current_player):
             print(i + 1, end = ": ")
 
             # Loop through column indices.
-            for j in range(len(board[i])):
+            for j in range(len(board_matrix[i])):
                 # Get elements from board in reverse order.
-                print(board[7-i][7-j], end = " ")
+                print(board_matrix[7-i][7-j], end = " ")
             print("\n")
 
         # Print reversed column labels at the end.
@@ -177,6 +177,8 @@ def is_empty(square):
     if square == "  ":
         print("\n   # You can't select an EMPTY starting square, please try a different move.\n   'Can't get some if there's none...'\n")
         return True
+    else:
+        return False
 
 # Check if end square is ocupied with a piece of the same color of the player.
 def same_color_end_square(end_square, current_player, silent = False):
@@ -734,10 +736,12 @@ def king_illegal(start_x, start_y, end_x, end_y, current_player, silent = False)
 ###############
 
 current_turn = 1
-# Keep count of kings' moves, and make flag for castling.
+# Keep count of kings' and rooks moves, and make flag for castling.
 wking, bking = 0, 0
 moves_count = {"a1_rook" : 0,"h1_rook" : 0, "a8_rook" : 0, "h8_rook" : 0, "wking" : 0, "bking" : 0}
 castle_flag = False
+# Create a variable to store the previous board, and an En Passant flag.
+previous_board = copy.deepcopy(board)
 enpassant_flag = False
 # Loop through turns.
 while (True):
@@ -891,11 +895,14 @@ while (True):
 
 
 # TODO: 
-# Checkmate end condition
-# Stalemate
-# Repetition draw.
-# Resign
-# keep track of captures
-# print list of moves
+# Enemy kings can't be next to each other, current code allows for that.
+# Checkmate end condition.
+# Add Stalemate.
+# Add Repetition draw.
+# Add Resign/quit option.
+# keep track of captures.
+# print list of moves.
+# reduce text with dictionary mapper for every illegal functions.
+# Reduce pawn illegal by assigning directions, instead of retiping all code for black.
 
 
