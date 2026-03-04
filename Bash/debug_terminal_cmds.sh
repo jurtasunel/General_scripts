@@ -59,3 +59,9 @@
 # To get IP:
 #ifconfig
 # the IP is the number after the "inet" under "eno1"	
+
+# ssh 
+#ssh zir826@inter01.labs.vu.nl
+
+# git fetch all
+#git fetch --all --prune
